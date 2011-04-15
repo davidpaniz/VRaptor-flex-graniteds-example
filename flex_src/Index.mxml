@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<s:Application xmlns:fx="http://ns.adobe.com/mxml/2009" 
+			   xmlns:s="library://ns.adobe.com/flex/spark" 
+			   xmlns:mx="library://ns.adobe.com/flex/mx" minWidth="955" minHeight="600">
+	<s:layout>
+		<s:VerticalLayout />
+	</s:layout>
+
+	<fx:Script>
+		<![CDATA[
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			protected function button1_clickHandler(event:MouseEvent):void
+			{
+				ro.test();
+				text.text = "Wainting";
+			}
+			protected function button2_clickHandler(event:MouseEvent):void
+			{
+				ro.testString();
+				text.text = "Wainting, Again";
+			}
+			
+			protected function testResult(event:ResultEvent):void
+			{
+				Alert.show("Generic result. It works");
+				text.text = "Response ok";
+			}
+			
+			protected function testStringResult(event:ResultEvent):void
+			{
+				Alert.show("Generic result. It works");
+				text.text = String(event.result);
+			}
+
+			protected function ro_faultHandler(event:FaultEvent):void
+			{
+				Alert.show("Generic failure. It doesnt work");
+				Alert.show(event.fault.name);
+				Alert.show(event.fault.rootCause.toString());
+				Alert.show(event.fault.message);
+
+				text.text = event.fault.message;
+			}
+
+		]]>
+	</fx:Script>
+
+	<fx:Declarations>
+		<s:RemoteObject id="ro" destination="test" fault="ro_faultHandler(event)" >
+			<s:method name="test" result="testResult(event)" />	
+			<s:method name="testString" result="testStringResult(event)" />	
+		</s:RemoteObject>
+		
+	</fx:Declarations>
+	
+	<s:Button click="button1_clickHandler(event)" label="Click to test" />
+	<s:Button click="button2_clickHandler(event)" label="2º Test" />
+	<mx:Text text="Testing GraniteDS" id="text"/>
+</s:Application>
